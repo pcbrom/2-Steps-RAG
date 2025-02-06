@@ -25,6 +25,9 @@ df_final['prompt'] = ''
 # Add a column for the results (to be filled later)
 df_final['results'] = ''
 
+# Add a column for the score (to be filled later)
+df_final['score'] = ''
+
 # Save the DataFrame to an XLSX file with good formatting
 wb = Workbook()
 ws = wb.active
