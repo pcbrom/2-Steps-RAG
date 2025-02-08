@@ -1,23 +1,45 @@
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
+from itertools import product
 
 # Define control variables
-variaveis_controle = {
-    'model': ['text-davinci-003', 'text-curie-001', 'text-babbage-001'],
-    'temperature': [0.1, 0.5, 0.9],
+"""
+"temperature": 
+Creative writing: High temperature can be beneficial for
+generating imaginative stories or poems. Factual responses: Low temperature
+is often preferred for tasks requiring precise answers to questions. 
+
+"top_p":
+Chooses tokens based on how much probability mass, and represents a cumulative
+probability threshold. Lower values: Lead to more focused and deterministic
+outputs, as the model only considers a smaller set of high-probability tokens. 
+Higher values: Encourage more diverse and creative responses by including
+a wider range of potential tokens. 
+
+"top_k":
+Chooses a specific number of the most probable tokens. Lower values (small k):
+Result in more predictable and focused text, as the model only considers a
+small set of highly likely words. Higher values (large k): Allow for more creative
+and diverse outputs, but may introduce less relevant or even nonsensical words. 
+"""
+control_variables = {
+    'model': ['Slim RAFT', 'Deepseek R1', 'GPT 4o-mini', 'GPT o3-mini', 'Gemini flash 2.0'],
+    'temperature': [0.1, 1.0, 1.9],
     'top_p': [0.1, 0.5, 0.9],
     'top_k': [1, 5, 10]
 }
 
-# Create a pandas DataFrame
-df = pd.DataFrame(variaveis_controle)
+# Create a list of all combinations of control variables
+keys = control_variables.keys()
+values = control_variables.values()
+combinations = list(product(*values))
 
-# Generate all possible combinations of control variables
-df_completo = df.loc[df.index.repeat(len(df)**3)].reset_index(drop=True)
+# Create a pandas DataFrame from the combinations
+df_final = pd.DataFrame(combinations, columns=keys)
 
-# Create a new DataFrame with all combinations
-df_final = pd.DataFrame(df_completo.values, columns=['temperature', 'top_p', 'top_k', 'model'])
+#Rename columns for better understanding
+df_final = df_final.rename(columns={'replicates':'replicate'})
 
 # Add a column for the prompt (to be filled later)
 df_final['prompt'] = ''
@@ -44,3 +66,20 @@ for row in df_final.values.tolist():
     ws.append(row)
 
 wb.save("experimental_design_plan.xlsx")
+
+import numpy as np
+from statsmodels.stats.power import FTestAnovaPower
+
+# Experiment parameters:
+effect_size = 0.25  # Medium effect size (Cohen's f)
+alpha = 0.05        # Significance level
+power = 0.80        # Desired power (80%)
+k_groups = 5        # Number of groups (e.g., for the 'model' factor)
+
+# Initialize the power analysis object for ANOVA
+analysis = FTestAnovaPower()
+
+# Calculate the sample size per group (replicates per condition)
+n = analysis.solve_power(effect_size=effect_size, alpha=alpha, power=power, k_groups=k_groups)
+
+print(f"Number of replicates per condition: {np.ceil(n)}")
