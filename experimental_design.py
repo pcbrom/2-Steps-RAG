@@ -25,7 +25,7 @@ and diverse outputs, but may introduce less relevant or even nonsensical words.
 """
 control_variables = {
     'model': ['Slim RAFT', 'deepseek-reasoner', 'gpt-4o-mini-2024-07-18', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31', 'gemini-2.0-flash-thinking-exp-01-21'],
-    'trial': range(1, 196),
+    'trial': range(1, 197),
     'temperature': [0.1, 1.0, 1.9],
     'top_p': [0.1, 0.5, 0.9]
 }
