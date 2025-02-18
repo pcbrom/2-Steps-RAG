@@ -16,12 +16,6 @@ probability threshold. Lower values: Lead to more focused and deterministic
 outputs, as the model only considers a smaller set of high-probability tokens. 
 Higher values: Encourage more diverse and creative responses by including
 a wider range of potential tokens. 
-
-"top_k":
-Chooses a specific number of the most probable tokens. Lower values (small k):
-Result in more predictable and focused text, as the model only considers a
-small set of highly likely words. Higher values (large k): Allow for more creative
-and diverse outputs, but may introduce less relevant or even nonsensical words. 
 """
 control_variables = {
     'model': ['Slim RAFT', 'deepseek-reasoner', 'gpt-4o-mini-2024-07-18', 'o1-mini-2024-09-12', 'o3-mini-2025-01-31', 'gemini-2.0-flash-thinking-exp-01-21'],
