@@ -24,7 +24,7 @@ print(df)
 model = 'gpt-4o-mini-2024-07-18'
 for index, row in df.iterrows():
     try:
-        prompt="Aqui é um teste. Responda 'OK' se você leu"
+        prompt=row['prompt']
         response = openai.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
@@ -45,4 +45,4 @@ for index, row in df.iterrows():
         df.loc[index, 'results'] = f"Error: {e}"
 
 # Save the updated DataFrame (optional)
-df.to_csv("experimental_design_results_4o_mini.csv", index=False)
+df.to_csv(f"experimental_design_results_{df['model'].iloc[0]}.csv", index=False)

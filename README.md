@@ -92,7 +92,7 @@ print(f"Number of replicates per condition: {np.ceil(n)}")
 # Number of replicates per condition: 196.0
 ```
 
-### 5. Updating `results_4o_mini.py` for Feature Completeness
+### 5. `results_4o_mini.py` and others `results_[model].py`
 
 To ensure all experimental conditions are evaluated and results are captured, the `results_4o_mini.py` script should be updated to iterate through all rows of the experimental design plan. Additionally, error handling can be improved, and the script can be made more robust.  Below is an outline of the necessary modifications:
 
@@ -100,18 +100,24 @@ To ensure all experimental conditions are evaluated and results are captured, th
 
 2.  **Comprehensive Error Handling:** Implement more detailed error handling to catch potential issues during API calls.  This includes logging errors and providing informative messages.
 
-3.  **Fixed Model Selection:** The `model` variable in the API call is fixed to 'gpt-4o-mini-2024-07-18'.
+3.  **List of Models:**
+    *   'Slim RAFT'
+    *   'gpt-4o-mini-2024-07-18'
+    *   'o1-mini-2024-09-12'
+    *   'o3-mini-2025-01-31'
+    *   'deepseek-reasoner'
+    *   'gemini-2.0-flash-thinking-exp-01-21'
 
 4.  **Saving All Results:**  The script should save the results for all models into a single CSV file.
 
-Here's how the core loop of `results_4o_mini.py` should be modified:
+Here's how the core loop of `results_[model].py` should be modified:
 
 ```python
 # Iterate over each row and make API call
-model = 'gpt-4o-mini-2024-07-18' # Fixed model
+model = 'gpt-4o-mini-2024-07-18' # Change this to the desired openai model
 for index, row in df.iterrows():
     try:
-        prompt="Aqui é um teste. Responda 'OK' se você leu"
+        prompt=row['prompt']
         response = openai.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
