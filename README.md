@@ -138,7 +138,7 @@ for index, row in df.iterrows():
         df.loc[index, 'results'] = f"Error: {e}"
 
 # Save the updated DataFrame (optional)
-df.to_csv("experimental_design_results_all_models.csv", index=False)
+df.to_csv(f"experimental_design_results_{df['model'].iloc[0]}.csv", index=False)
 ```
 
 This revised approach ensures that the script iterates through all rows in your experimental design, uses the fixed model for each API call, and saves all results into a single CSV file.  Remember to remove the line filtering by model to enable this comprehensive processing.
