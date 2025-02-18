@@ -96,7 +96,7 @@ print(f"Number of replicates per condition: {np.ceil(n)}")
 
 To ensure all experimental conditions are evaluated and results are captured, the `results_4o_mini.py` script should be updated to iterate through all rows of the experimental design plan. Additionally, error handling can be improved, and the script can be made more robust.  Below is an outline of the necessary modifications:
 
-1.  **Remove Model Filtering:**  Eliminate the line that filters the DataFrame to only include a specific model (e.g., `df = df[df['model'] == 'GPT 4o-mini']`). This ensures that the script processes all models defined in your experimental design.
+1.  **Remove Model Filtering:**  Eliminate the line that filters the DataFrame to only include a specific model (e.g., `df = df[df['model'] == 'gpt-4o-mini-2024-07-18']`). This ensures that the script processes all models defined in your experimental design.
 
 2.  **Comprehensive Error Handling:** Implement more detailed error handling to catch potential issues during API calls.  This includes logging errors and providing informative messages.
 
