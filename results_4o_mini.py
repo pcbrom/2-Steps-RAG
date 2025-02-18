@@ -14,27 +14,30 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 
 # Import model
 excel_file = "experimental_design_plan.xlsx"
-df = pd.read_excel(excel_file)
+df = pd.read_excel(excel_file, decimal='.')
 df = df[df['model'] == 'GPT 4o-mini']
+cols_to_fill = ['prompt', 'results', 'score']
+df[cols_to_fill] = df[cols_to_fill].fillna('')
 print(df)
 
-# Iterate over each row and make OpenAI API call
+# Iterate over each row and make API call
 model = 'gpt-4o-mini-2024-07-18'
 for index, row in df.iterrows():
     try:
-        response = openai.ChatCompletion.create(
+        prompt="Aqui é um teste. Responda 'OK' se você leu"
+        response = openai.chat.completions.create(
             model=model,
-            messages=[{"role": "user", "content": row['prompt']}],
-            temperature=row['temperature'],
-            top_p=row['top_p'],
-            top_k=row['top_k']
+            messages=[{"role": "user", "content": prompt}],
+            temperature=float(row['temperature']),
+            top_p=float(row['top_p'])
         )
 
         # Extract and store the generated text
         generated_text = response.choices[0].message.content
+        print(generated_text)
         df.loc[index, 'results'] = generated_text
 
-    except openai.error.OpenAIError as e:
+    except openai.OpenAIError as e:
         print(f"Error processing row {index}: {e}")
         df.loc[index, 'results'] = f"Error: {e}"  # Store the error message
     except Exception as e:

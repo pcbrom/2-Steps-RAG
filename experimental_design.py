@@ -26,8 +26,7 @@ and diverse outputs, but may introduce less relevant or even nonsensical words.
 control_variables = {
     'model': ['Slim RAFT', 'Deepseek R1', 'GPT 4o-mini', 'GPT o3-mini', 'Gemini flash 2.0'],
     'temperature': [0.1, 1.0, 1.9],
-    'top_p': [0.1, 0.5, 0.9],
-    'top_k': [1, 5, 10]
+    'top_p': [0.1, 0.5, 0.9]
 }
 
 # Create a list of all combinations of control variables
