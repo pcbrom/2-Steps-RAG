@@ -41,6 +41,9 @@ df_final['prompt'] = ''
 # Add a column for the results (to be filled later)
 df_final['results'] = ''
 
+# Add a column for the baseline (to be filled later)
+df_final['baseline'] = ''
+
 # Add a column for the score (to be filled later)
 df_final['score'] = ''
 
