@@ -21,7 +21,7 @@ df[cols_to_fill] = df[cols_to_fill].fillna('')
 print(df)
 
 # Iterate over each row and make API call
-model = 'o3-mini-2025-01-31'
+model = 'o1-mini-2024-09-12'
 for index, row in df.iterrows():
     try:
         prompt=row['prompt']
