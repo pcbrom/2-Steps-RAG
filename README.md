@@ -147,7 +147,7 @@ This revised approach ensures that the script iterates through all rows in your 
 
 This script performs the following actions:
 
-1.  **Imports Data:** Reads NCM (Nomenclatura Comum do Mercosul) data from a CSV file (`data/BaseDESC_NCM.csv`) using the `polars` library.
+1.  **Imports Data:** Reads NCM (Nomenclatura Comum do Mercosul) data from a CSV file (`data/BaseDESC_NCM.csv`) using the `polars` library. This file originates from https://github.com/vinidiol/descmerc/blob/main/BaseDESC_NCM.zip.
 
 2.  **Data Transformation:** Concatenates relevant information from each row (NCM, Rótulo, Item, Produto) into a single text string. This is done in parallel using a `ThreadPoolExecutor` for efficiency.
 
