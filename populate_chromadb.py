@@ -4,7 +4,7 @@ import chromadb
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 from sentence_transformers import SentenceTransformer
-
+import shutil
 
 # Import NCM data and concatenate info
 df = pl.read_csv('data/BaseDESC_NCM.csv', separator='\t', encoding='utf-8', n_threads=18)
@@ -21,7 +21,16 @@ with ThreadPoolExecutor() as executor:
 # Load a pre-trained Portuguese sentence transformer model
 # https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
 model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-embeddings = model.encode(documents[0:5])
+embeddings = model.encode(documents)
+
+# Create persistent chromadb
+try:
+    shutil.rmtree("chroma_db")
+    print("Successfully removed chroma_db directory")
+except FileNotFoundError:
+    print("chroma_db directory not found, so it could not be removed")
+except Exception as e:
+    print(f"An error occurred while removing chroma_db: {e}")
 
 # Create persistent chromadb
 persist_directory = "chroma_db"
@@ -29,9 +38,17 @@ client = chromadb.PersistentClient(path=persist_directory)
 collection_name = "ncm-all-data"
 collection = client.get_or_create_collection(name=collection_name)
 
-# 
-collection.add(
-    documents=documents,
-    embeddings=embeddings,
-    ids=[f"id{i}" for i in range(len(df))]
-)
+# Populate chromadb in batches
+batch_size = 41666  # Maximum batch size
+
+for i in tqdm(range(0, len(documents), batch_size), desc="Adding batches to ChromaDB"):
+    batch_end = min(i + batch_size, len(documents))
+    batch_documents = documents[i:batch_end]
+    batch_embeddings = embeddings[i:batch_end]
+    batch_ids = [f"id{j}" for j in range(i, batch_end)]
+
+    collection.add(
+        documents=batch_documents,
+        embeddings=batch_embeddings,
+        ids=batch_ids
+    )
