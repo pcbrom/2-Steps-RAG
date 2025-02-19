@@ -22,15 +22,6 @@ with ThreadPoolExecutor() as executor:
 # https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
 model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
 embeddings = model.encode(documents[0:5])
-print(embeddings)
-
-
-"""model_name = "paraphrase-multilingual-MiniLM-L12-v2"
-model = SentenceTransformer(model_name)
-
-# Generate embeddings for the documents
-embeddings = model.encode(documents)
-
 
 # Create persistent chromadb
 persist_directory = "chroma_db"
@@ -41,6 +32,6 @@ collection = client.get_or_create_collection(name=collection_name)
 # 
 collection.add(
     documents=documents,
+    embeddings=embeddings,
     ids=[f"id{i}" for i in range(len(df))]
 )
-"""
