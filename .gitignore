@@ -1,2 +1,4 @@
 .env
 .venv
+BaseDESC_NCM.csv
+chroma_db
