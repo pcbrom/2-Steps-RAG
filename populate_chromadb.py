@@ -33,6 +33,7 @@ except Exception as e:
     print(f"An error occurred while removing chroma_db: {e}")
 
 # Create persistent chromadb
+print("Start persistent chromadb")
 persist_directory = "chroma_db"
 client = chromadb.PersistentClient(path=persist_directory)
 collection_name = "ncm-all-data"
@@ -40,7 +41,7 @@ collection = client.get_or_create_collection(name=collection_name)
 
 # Populate chromadb in batches
 batch_size = 41666  # Maximum batch size
-
+print("Start populate chromadb")
 for i in tqdm(range(0, len(documents), batch_size), desc="Adding batches to ChromaDB"):
     batch_end = min(i + batch_size, len(documents))
     batch_documents = documents[i:batch_end]
