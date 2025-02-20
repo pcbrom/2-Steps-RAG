@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import openai
 from tqdm import tqdm
+import time
 
 # Specify the path to your .env file
 dotenv_path = "/mnt/4d4f90e5-f220-481e-8701-f0a546491c35/arquivos/projetos/.env"
@@ -25,8 +26,10 @@ print(df)
 # Iterate over each row and make API call
 output_filename = f"experimental_design_results_{model}.csv"
 for index, row in tqdm(df.iterrows(), total=len(df), desc=f"Processing {model}"):
+    if index % 50 == 0 and index != 0:
+        print("2 min. pause...")
+        time.sleep(120)  # Pausa de 120 segundos (2 minutos)
     try:
-        # break
         augmented_prompt = row['augmented_prompt']
 
         response = openai.chat.completions.create(
@@ -39,8 +42,6 @@ for index, row in tqdm(df.iterrows(), total=len(df), desc=f"Processing {model}")
         # Extract and store the generated text
         generated_text = response.choices[0].message.content
         df.loc[index, 'results'] = generated_text
-
-        # print(generated_text)
 
     except openai.OpenAIError as e:
         print(f"Error processing row {index} for model {model}: {e}")
