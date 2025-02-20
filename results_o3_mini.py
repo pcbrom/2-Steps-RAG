@@ -13,36 +13,38 @@ load_dotenv(dotenv_path=dotenv_path)
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
 # Import model
-excel_file = "experimental_design_plan.xlsx"
-df = pd.read_excel(excel_file, decimal='.')
-df = df[df['model'] == 'GPT 4o-mini']
-cols_to_fill = ['prompt', 'results', 'score']
+csv_file = "cost_analysis_results.csv"
+df = pd.read_csv(csv_file, decimal='.', sep=',', encoding='utf-8')
+cols_to_fill = ['results', 'score']
 df[cols_to_fill] = df[cols_to_fill].fillna('')
 print(df)
 
 # Iterate over each row and make API call
 model = 'o3-mini-2025-01-31'
+output_filename = f"experimental_design_results_{model}.csv"
 for index, row in df.iterrows():
     try:
-        prompt=row['prompt']
+        augmented_prompt = row['augmented_prompt']
+
         response = openai.chat.completions.create(
             model=model,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[{"role": "user", "content": augmented_prompt}],
             temperature=float(row['temperature']),
             top_p=float(row['top_p'])
         )
 
         # Extract and store the generated text
         generated_text = response.choices[0].message.content
-        print(generated_text)
         df.loc[index, 'results'] = generated_text
 
+        print(generated_text)
+
     except openai.OpenAIError as e:
-        print(f"Error processing row {index}: {e}")
+        print(f"Error processing row {index} for model {model}: {e}")
         df.loc[index, 'results'] = f"Error: {e}"  # Store the error message
     except Exception as e:
-        print(f"Unexpected error processing row {index}: {e}")
+        print(f"Unexpected error processing row {index} for model {model}: {e}")
         df.loc[index, 'results'] = f"Error: {e}"
 
 # Save the updated DataFrame (optional)
-df.to_csv(f"experimental_design_results_{df['model'].iloc[0]}.csv", index=False)
+df.to_csv(output_filename, index=False)

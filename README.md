@@ -111,6 +111,31 @@ This script performs the following actions:
     *   **Batches Data:** Divides the documents and embeddings into batches to optimize the insertion process.
     *   **Adds to ChromaDB:**  Adds the documents, their corresponding embeddings, and unique IDs to the ChromaDB collection.  This allows for efficient semantic search and retrieval of NCM data.
 
+## Cost Analysis
+
+This section describes the `cost_analysis.py` script, which performs a cost analysis for different language models. The script:
+
+1.  **Loads Data:** Reads data from an Excel file containing prompts and model configurations.
+2.  **Configures Model Information:** Sets up information about the models, including pricing and tokenization methods.
+3.  **Calculates Token Usage:** Computes the number of tokens used by prompts and model responses.
+4.  **Augments Prompts (Optional):** Augments prompts with context retrieved from a ChromaDB database using Retrieval-Augmented Generation (RAG).
+5.  **Calculates Costs:** Determines the total cost of using each model based on token usage and pricing.
+6.  **Aggregates Costs:** Groups costs by model to provide a summary of expenses.
+7.  **Prints Results:** Displays the cost analysis results for each model.
+8.  **Saves Data:** Saves the detailed cost analysis data to a CSV file.
+
+```
+Costs per model:
+Model: Slim RAFT, Total Cost: $0.00, Augmented Prompt Tokens: 0.0, Results Tokens: 0.0
+Model: deepseek-reasoner, Total Cost: $6.71, Augmented Prompt Tokens: 1000161.0, Results Tokens: 3000483.0
+Model: gemini-2.0-flash-thinking-exp-01-21, Total Cost: $0.00, Augmented Prompt Tokens: 0.0, Results Tokens: 0.0
+Model: gpt-4o-mini-2024-07-18, Total Cost: $0.40, Augmented Prompt Tokens: 1057518.0, Results Tokens: 3172554.0
+Model: o1-mini-2024-09-12, Total Cost: $2.91, Augmented Prompt Tokens: 1057518.0, Results Tokens: 3172554.0
+Model: o3-mini-2025-01-31, Total Cost: $2.91, Augmented Prompt Tokens: 1057518.0, Results Tokens: 3172554.0
+
+Total cost of the experiment: $12.92
+```
+
 ## About `results_4o_mini.py` and other `results_[model].py` scripts
 
 To ensure all experimental conditions are evaluated and results are captured, the `results_4o_mini.py` script (and its similar `results_[model].py` scripts) should be updated to iterate through all rows of the experimental design plan. Additionally, error handling can be improved, and the script can be made more robust. Below is an outline of the necessary modifications:
