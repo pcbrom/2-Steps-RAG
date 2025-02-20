@@ -26,9 +26,9 @@ print(df)
 # Iterate over each row and make API call
 output_filename = f"experimental_design_results_{model}.csv"
 for index, row in tqdm(df.iterrows(), total=len(df), desc=f"Processing {model}"):
-    if index % 50 == 0 and index != 0:
-        print("2 min. pause...")
-        time.sleep(120)  # Pausa de 120 segundos (2 minutos)
+    if index % 100 == 0 and index != 0:
+        print("min. pause...")
+        time.sleep(60)
     try:
         augmented_prompt = row['augmented_prompt']
 
