@@ -12,16 +12,17 @@ load_dotenv(dotenv_path=dotenv_path)
 
 # Access and store the environment variable
 openai_api_key = os.getenv("OPENAI_API_KEY")
+model = 'o1-mini-2024-09-12'
 
 # Import model
 csv_file = "cost_analysis_results.csv"
 df = pd.read_csv(csv_file, decimal='.', sep=',', encoding='utf-8')
+df = df[df['model'] == model]
 cols_to_fill = ['results', 'score']
 df[cols_to_fill] = df[cols_to_fill].fillna('')
 print(df)
 
 # Iterate over each row and make API call
-model = 'o1-mini-2024-09-12'
 output_filename = f"experimental_design_results_{model}.csv"
 for index, row in tqdm(df.iterrows(), total=len(df), desc=f"Processing {model}"):
     try:
