@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 import openai
+from tqdm import tqdm
 
 # Specify the path to your .env file
 dotenv_path = "/mnt/4d4f90e5-f220-481e-8701-f0a546491c35/arquivos/projetos/.env"
@@ -22,7 +23,7 @@ print(df)
 # Iterate over each row and make API call
 model = 'o1-mini-2024-09-12'
 output_filename = f"experimental_design_results_{model}.csv"
-for index, row in df.iterrows():
+for index, row in tqdm(df.iterrows(), total=len(df), desc=f"Processing {model}"):
     try:
         augmented_prompt = row['augmented_prompt']
 

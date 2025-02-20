@@ -167,34 +167,10 @@ Here's how the core loop of `results_[model].py` should be modified:
 ```python
 # Iterate over each row and make API call
 model = 'gpt-4o-mini-2024-07-18'
+output_filename = f"experimental_design_results_{model}.csv"
 for index, row in df.iterrows():
     try:
-        prompt=row['prompt']
-        
-        prompt_embeddings = model_sentence.encode(prompt)
-        results = collection.query(
-            query_embeddings=[prompt_embeddings],
-            n_results=10,
-            include=["documents", "embeddings", "distances"]
-        )
-
-        context = "\n".join(results['documents'][0])
-
-        augmented_prompt = f"""
-        Você é um assistente especializado em responder de forma objetiva e clara às perguntas com base em informações relevantes extraídas de uma base de conhecimento. 
-        
-        Abaixo está um contexto relevante recuperado da base de dados:
-
-        Contexto:
-        {context}
-
-        Com base nessas informações, responda à seguinte pergunta de forma clara e objetiva:
-
-        Pergunta:
-        {prompt}
-
-        Se o contexto não contiver informações suficientes para uma resposta precisa, indique que não há dados suficientes para responder com segurança.
-        """
+        augmented_prompt = row['augmented_prompt']
 
         response = openai.chat.completions.create(
             model=model,
@@ -210,14 +186,14 @@ for index, row in df.iterrows():
         print(generated_text)
 
     except openai.OpenAIError as e:
-        print(f"Error processing row {index}: {e}")
+        print(f"Error processing row {index} for model {model}: {e}")
         df.loc[index, 'results'] = f"Error: {e}"  # Store the error message
     except Exception as e:
-        print(f"Unexpected error processing row {index}: {e}")
+        print(f"Unexpected error processing row {index} for model {model}: {e}")
         df.loc[index, 'results'] = f"Error: {e}"
 
 # Save the updated DataFrame (optional)
-df.to_csv(f"experimental_design_results_{df['model'].iloc[0]}.csv", index=False)
+df.to_csv(output_filename, index=False)
 ```
 
 This revised approach ensures that the script iterates through all rows in your experimental design, uses the fixed model for each API call, and saves all results into a single CSV file.  Remember to remove the line filtering by model to enable this comprehensive processing.
