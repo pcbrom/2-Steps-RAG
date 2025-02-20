@@ -32,21 +32,22 @@ model_sentence = SentenceTransformer('sentence-transformers/paraphrase-multiling
 
 # Iterate over each row and make API call
 model = 'gpt-4o-mini-2024-07-18'
-for index, row in df.head(1).iterrows():
+for index, row in df.iterrows():
     try:
         prompt=row['prompt']
         
         prompt_embeddings = model_sentence.encode(prompt)
         results = collection.query(
             query_embeddings=[prompt_embeddings],
-            n_results=5,
+            n_results=10,
             include=["documents", "embeddings", "distances"]
         )
 
         context = "\n".join(results['documents'][0])
 
         augmented_prompt = f"""
-        Você é um assistente especializado em responder perguntas com base em informações relevantes extraídas de uma base de conhecimento.
+        Você é um assistente especializado em responder de forma objetiva e clara às perguntas com base em informações relevantes extraídas de uma base de conhecimento.
+        
         Abaixo está um contexto relevante recuperado da base de dados:
 
         Contexto:
