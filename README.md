@@ -149,8 +149,8 @@ To ensure all experimental conditions are evaluated and results are captured, th
 4.  **List of Supported Models:** The script should be compatible with the following models (but not limited to):
     *   'Slim RAFT'
     *   'gpt-4o-mini-2024-07-18'
-    *   'o1-mini-2024-09-12'
-    *   'o3-mini-2025-01-31'
+    *   'o1-mini-2024-09-12' (Default values. Temperature and top_p cannot be changed: `temperature = 1.0` and `top_p = 1.0`)
+    *   'o3-mini-2025-01-31' (Error code: 404 - {'error': {'message': 'The model `o3-mini-2025-01-31` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}})
     *   'deepseek-reasoner'
     *   'gemini-2.0-flash-thinking-exp-01-21'
 
