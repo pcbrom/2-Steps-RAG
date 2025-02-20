@@ -1,6 +1,5 @@
 import polars as pl
 import chromadb
-# from chromadb.config import Settings
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 from sentence_transformers import SentenceTransformer

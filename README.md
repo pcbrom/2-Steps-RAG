@@ -92,57 +92,6 @@ print(f"Number of replicates per condition: {np.ceil(n)}")
 # Number of replicates per condition: 196.0
 ```
 
-### 5. `results_4o_mini.py` and others `results_[model].py`
-
-To ensure all experimental conditions are evaluated and results are captured, the `results_4o_mini.py` script should be updated to iterate through all rows of the experimental design plan. Additionally, error handling can be improved, and the script can be made more robust.  Below is an outline of the necessary modifications:
-
-1.  **Remove Model Filtering:**  Eliminate the line that filters the DataFrame to only include a specific model (e.g., `df = df[df['model'] == 'gpt-4o-mini-2024-07-18']`). This ensures that the script processes all models defined in your experimental design.
-
-2.  **Comprehensive Error Handling:** Implement more detailed error handling to catch potential issues during API calls.  This includes logging errors and providing informative messages.
-
-3.  **List of Models:**
-    *   'Slim RAFT'
-    *   'gpt-4o-mini-2024-07-18'
-    *   'o1-mini-2024-09-12'
-    *   'o3-mini-2025-01-31'
-    *   'deepseek-reasoner'
-    *   'gemini-2.0-flash-thinking-exp-01-21'
-
-4.  **Saving All Results:**  The script should save the results for all models into a single CSV file.
-
-Here's how the core loop of `results_[model].py` should be modified:
-
-```python
-# Iterate over each row and make API call
-model = 'gpt-4o-mini-2024-07-18' # Change this to the desired openai model
-for index, row in df.iterrows():
-    try:
-        prompt=row['prompt']
-        response = openai.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=float(row['temperature']),
-            top_p=float(row['top_p'])
-        )
-
-        # Extract and store the generated text
-        generated_text = response.choices[0].message.content
-        print(f"Model: {model}, Result: {generated_text}")
-        df.loc[index, 'results'] = generated_text
-
-    except openai.OpenAIError as e:
-        print(f"Error processing row {index} for model {model}: {e}")
-        df.loc[index, 'results'] = f"Error: {e}"  # Store the error message
-    except Exception as e:
-        print(f"Unexpected error processing row {index} for model {model}: {e}")
-        df.loc[index, 'results'] = f"Error: {e}"
-
-# Save the updated DataFrame (optional)
-df.to_csv(f"experimental_design_results_{df['model'].iloc[0]}.csv", index=False)
-```
-
-This revised approach ensures that the script iterates through all rows in your experimental design, uses the fixed model for each API call, and saves all results into a single CSV file.  Remember to remove the line filtering by model to enable this comprehensive processing.
-
 ## Pupulate ChromaDB `populate_chromadb.py`
 
 This script performs the following actions:
@@ -161,3 +110,86 @@ This script performs the following actions:
 5.  **Data Population:**
     *   **Batches Data:** Divides the documents and embeddings into batches to optimize the insertion process.
     *   **Adds to ChromaDB:**  Adds the documents, their corresponding embeddings, and unique IDs to the ChromaDB collection.  This allows for efficient semantic search and retrieval of NCM data.
+
+## About `results_4o_mini.py` and other `results_[model].py` scripts
+
+To ensure all experimental conditions are evaluated and results are captured, the `results_4o_mini.py` script (and its similar `results_[model].py` scripts) should be updated to iterate through all rows of the experimental design plan. Additionally, error handling can be improved, and the script can be made more robust. Below is an outline of the necessary modifications:
+
+1.  **Remove Model Filtering:** Eliminate the line that filters the DataFrame to include only a specific model (e.g., `df = df[df['model'] == 'gpt-4o-mini-2024-07-18']`). This ensures that the script processes all models defined in your experimental design. The script should process all models defined in your experimental design file.
+
+2.  **Comprehensive Error Handling:** Implement more detailed error handling to catch potential issues during API calls. This includes logging errors and providing informative messages, including the model name, prompt, and error details. Consider using try-except blocks to catch `openai.OpenAIError` and other potential exceptions. Store the error messages in the 'results' column of the DataFrame.
+
+3.  **Model Iteration:** The script should be able to iterate over the models specified in the experimental design file. The `model` variable in the loop should dynamically pick up the model name from the DataFrame row.
+
+4.  **List of Supported Models:** The script should be compatible with the following models (but not limited to):
+    *   'Slim RAFT'
+    *   'gpt-4o-mini-2024-07-18'
+    *   'o1-mini-2024-09-12'
+    *   'o3-mini-2025-01-31'
+    *   'deepseek-reasoner'
+    *   'gemini-2.0-flash-thinking-exp-01-21'
+
+5.  **Saving All Results:** The script should save the results for all models into a single CSV file. The CSV filename should indicate that it contains results from multiple models (e.g., `experimental_design_results_all_models.csv`). Ensure the `index=False` argument is used when saving the CSV to avoid including the DataFrame index as a column.
+
+6.  **Retrieval-Augmented Generation Prompt Augmentation:** The script uses prompt augmentation with context retrieved from ChromaDB. Ensure that the ChromaDB collection name (`ncm-all-data`) is correctly specified and that the `populate_chromadb.py` script has been run to populate the database.
+
+7.  **Temperature and Top_p:** The script reads `temperature` and `top_p` values from the experimental design file. Ensure these columns exist and contain valid numerical values.
+
+8.  **API Key:** The script uses the OpenAI API key stored in a `.env` file. Ensure the `.env` file exists and contains the `OPENAI_API_KEY` variable.
+
+Here's how the core loop of `results_[model].py` should be modified:
+
+```python
+# Iterate over each row and make API call
+model = 'gpt-4o-mini-2024-07-18'
+for index, row in df.head(1).iterrows():
+    try:
+        prompt=row['prompt']
+        
+        prompt_embeddings = model_sentence.encode(prompt)
+        results = collection.query(
+            query_embeddings=[prompt_embeddings],
+            n_results=5,
+            include=["documents", "embeddings", "distances"]
+        )
+
+        context = "\n".join(results['documents'][0])
+
+        augmented_prompt = f"""
+        Você é um assistente especializado em responder perguntas com base em informações relevantes extraídas de uma base de conhecimento.
+        Abaixo está um contexto relevante recuperado da base de dados:
+
+        Contexto:
+        {context}
+
+        Com base nessas informações, responda à seguinte pergunta de forma clara e objetiva:
+
+        Pergunta:
+        {prompt}
+
+        Se o contexto não contiver informações suficientes para uma resposta precisa, indique que não há dados suficientes para responder com segurança.
+        """
+
+        response = openai.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": augmented_prompt}],
+            temperature=float(row['temperature']),
+            top_p=float(row['top_p'])
+        )
+
+        # Extract and store the generated text
+        generated_text = response.choices[0].message.content
+        df.loc[index, 'results'] = generated_text
+
+    except openai.OpenAIError as e:
+        print(f"Error processing row {index}: {e}")
+        df.loc[index, 'results'] = f"Error: {e}"  # Store the error message
+    except Exception as e:
+        print(f"Unexpected error processing row {index}: {e}")
+        df.loc[index, 'results'] = f"Error: {e}"
+
+# Save the updated DataFrame (optional)
+df.to_csv(f"experimental_design_results_{df['model'].iloc[0]}.csv", index=False)
+```
+
+This revised approach ensures that the script iterates through all rows in your experimental design, uses the fixed model for each API call, and saves all results into a single CSV file.  Remember to remove the line filtering by model to enable this comprehensive processing.
