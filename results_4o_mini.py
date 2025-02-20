@@ -38,7 +38,7 @@ for index, row in tqdm(df.iterrows(), total=len(df), desc=f"Processing {model}")
         generated_text = response.choices[0].message.content
         df.loc[index, 'results'] = generated_text
 
-        print(generated_text)
+        # print(generated_text)
 
     except openai.OpenAIError as e:
         print(f"Error processing row {index} for model {model}: {e}")
