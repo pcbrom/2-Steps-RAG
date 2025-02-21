@@ -31,7 +31,7 @@ Reference: https://openrouter.ai/openai/o1-mini-2024-09-12/api
 """
 
 # Import model
-csv_file = "cost_analysis_results.csv"
+csv_file = "augmented_prompt.csv"
 df = pd.read_csv(csv_file, decimal='.', sep=',', encoding='utf-8')
 df = df[df['model'] == model]
 df = df[df['temperature'] == 1.0]

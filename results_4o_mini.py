@@ -16,7 +16,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 model = 'gpt-4o-mini-2024-07-18'
 
 # Import model
-csv_file = "cost_analysis_results.csv"
+csv_file = "augmented_prompt.csv"
 df = pd.read_csv(csv_file, decimal='.', sep=',', encoding='utf-8')
 df = df[df['model'] == model]
 cols_to_fill = ['results', 'score']
