@@ -92,24 +92,24 @@ print(f"Number of replicates per condition: {np.ceil(n)}")
 # Number of replicates per condition: 196.0
 ```
 
-## Pupulate ChromaDB `populate_chromadb.py`
+## Populating ChromaDB with `populate_chromadb.py`
 
 This script performs the following actions:
 
-1.  **Imports Data:** Reads NCM (Nomenclatura Comum do Mercosul) data from a CSV file (`data/BaseDESC_NCM.csv`) using the `polars` library. This file originates from https://github.com/vinidiol/descmerc/blob/main/BaseDESC_NCM.zip.
+1.  **Data Import:** Reads NCM (Nomenclatura Comum do Mercosul) data from a CSV file (`data/BaseDESC_NCM.csv`) using the `polars` library. This file originates from https://github.com/vinidiol/descmerc/blob/main/BaseDESC_NCM.zip.
 
-2.  **Data Transformation:** Concatenates relevant information from each row (NCM, Rótulo, Item, Produto) into a single text string. This is done in parallel using a `ThreadPoolExecutor` for efficiency.
+2.  **Data Transformation:** Concatenates relevant information from each row (NCM, Rótulo, Item, Produto) into a single text string. This is done in parallel using `multiprocessing` to increase efficiency.
 
-3.  **Sentence Embedding:**  Utilizes a pre-trained Portuguese sentence transformer model (`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`) to generate embeddings for each text string. These embeddings represent the semantic meaning of the text.
+3.  **Sentence Embedding:** Utilizes a pre-trained Portuguese sentence transformer model (`sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`) to generate embeddings for each text string. These embeddings represent the semantic meaning of the text.
 
 4.  **ChromaDB Setup:**
-    *   **Removes Existing Database (if any):**  Deletes the `chroma_db` directory if it exists, to ensure a clean start.
+    *   **Removes Existing Database (if any):** Deletes the `chroma_db` directory if it exists, to ensure a clean start.
     *   **Creates Persistent Client:** Initializes a persistent ChromaDB client, storing the database in the `chroma_db` directory.
     *   **Creates Collection:** Creates or retrieves a collection named `ncm-all-data` within the ChromaDB database.
 
 5.  **Data Population:**
     *   **Batches Data:** Divides the documents and embeddings into batches to optimize the insertion process.
-    *   **Adds to ChromaDB:**  Adds the documents, their corresponding embeddings, and unique IDs to the ChromaDB collection.  This allows for efficient semantic search and retrieval of NCM data.
+    *   **Adds to ChromaDB:** Adds the documents, their corresponding embeddings, and unique IDs to the ChromaDB collection. This allows for efficient semantic search and retrieval of NCM data.
 
 ## Cost Analysis
 
