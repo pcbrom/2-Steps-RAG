@@ -1,5 +1,4 @@
 import pandas as pd
-import tiktoken
 import chromadb
 from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
@@ -32,35 +31,6 @@ if not os.path.exists(plan_file_path):
     raise FileNotFoundError(f"Error: File {plan_file_path} not found.")
 
 df = pd.read_excel(plan_file_path)
-
-# Define Model Pricing Data
-model_data = {
-    "gpt-4o-mini-2024-07-18": {"encoding": "gpt-4o-mini-2024-07-18", "price_input": 0.15, "price_output": 0.075},
-    "o1-mini-2024-09-12": {"encoding": "o1-mini-2024-09-12", "price_input": 1.10, "price_output": 0.55},
-    "o3-mini-2025-01-31": {"encoding": "o3-mini-2025-01-31", "price_input": 1.10, "price_output": 0.55},
-    "deepseek-reasoner": {"encoding": None, "price_input": 0.14, "price_output": 2.19},
-    "gemini-2.0-flash-thinking-exp-01-21": {"encoding": None, "price_input": 0.0, "price_output": 0.0}
-}
-
-# Token Count Function
-def count_tokens(text, model_name):
-    """Counts tokens based on the selected model."""
-    model_info = model_data.get(model_name)
-    if not model_info:
-        return 0
-
-    if model_name == "deepseek-reasoner":
-        return len(text) * 0.3 if isinstance(text, str) else 0
-
-    encoding_name = model_info["encoding"]
-    if not encoding_name:
-        return 0
-
-    try:
-        encoding = tiktoken.encoding_for_model(encoding_name)
-        return len(encoding.encode(text)) if isinstance(text, str) else 0
-    except Exception:
-        return 0
 
 # Function to Generate Augmented Prompt Using RAG
 def create_augmented_prompt(prompt):
@@ -142,6 +112,7 @@ def create_augmented_prompt(prompt):
 
 tqdm.pandas(desc="Generating augmented prompts")
 tmp = df['prompt'].head(196).progress_apply(create_augmented_prompt)
+tmp = tmp.repeat(len(df)/196)
 
 # Apply Augmented Prompt to DataFrame
 df['augmented_prompt'] = tmp
@@ -149,45 +120,3 @@ df['augmented_prompt'] = tmp
 # Save Results
 df.to_csv("augmented_prompt.csv", index=False)
 print("Results saved in augmented_prompt.csv")
-
-# Token Count and Cost Calculation
-tqdm.pandas(desc="Calculating tokens")
-df['prompt_tokens'] = df.progress_apply(lambda row: count_tokens(row['prompt'], row['model']), axis=1)
-df['augmented_prompt_tokens'] = df.progress_apply(lambda row: count_tokens(row['augmented_prompt'], row['model']), axis=1)
-
-# Assuming output tokens are 3x the augmented prompt tokens
-df['results_tokens'] = df['augmented_prompt_tokens'] * 3
-
-# Cost Calculation
-def calculate_cost(row, token_type):
-    model_info = model_data.get(row['model'])
-    if not model_info:
-        return 0
-
-    tokens = row['augmented_prompt_tokens'] if token_type == 'prompt' else row['results_tokens']
-    price_per_1m_tokens = model_info['price_input'] if token_type == 'prompt' else model_info['price_output']
-
-    return (tokens / 1_000_000) * price_per_1m_tokens
-
-tqdm.pandas(desc="Calculating costs")
-df['prompt_cost'] = df.progress_apply(lambda row: calculate_cost(row, 'prompt'), axis=1)
-df['results_cost'] = df.progress_apply(lambda row: calculate_cost(row, 'results'), axis=1)
-df['total_cost'] = df['prompt_cost'] + df['results_cost']
-
-# Aggregate Costs by Model
-model_costs = df.groupby('model').agg({
-    'prompt_tokens': 'sum',
-    'augmented_prompt_tokens': 'sum',
-    'results_tokens': 'sum',
-    'prompt_cost': 'sum',
-    'results_cost': 'sum',
-    'total_cost': 'sum'
-})
-
-print("\n🔹 Cost per Model:")
-for model, row in model_costs.iterrows():
-    print(f"Model: {model}, Total Cost: ${row['total_cost']:.2f}")
-
-# Save Results
-df.to_csv("cost_analysis_results.csv", index=False)
-print("Results saved in cost_analysis_results.csv")
