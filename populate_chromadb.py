@@ -6,41 +6,36 @@ from sentence_transformers import SentenceTransformer
 import shutil
 
 # Import NCM data and concatenate info
-with tqdm(total=100, desc="Loading data") as pbar:
+with tqdm(total=100, desc="Carregando dados") as pbar:
     df = pl.read_csv('data/BaseDESC_NCM.csv', separator='\t', encoding='utf-8', n_threads=18)
     pbar.update(100)
 
 # Process rows to create documents and metadata
 def process_row(row):
-    document = f"NCM: {row['NCM']}, Rótulo: {row['rotulo']}, Item: {row['Item']}, Produto: {row['XPROD']}"
-    metadata = {
-        "NCM": row['NCM'],
-        "rotulo": row['rotulo'],
-        "Item": row['Item'],
-        "Produto": row['XPROD']
-    }
-    return document, metadata
-
-def sanitize_metadata(metadata):
-    sanitized = {}
-    for key, value in metadata.items():
-        # Ensure keys are strings and values are strings, numbers, or booleans
-        if isinstance(key, str):
-            if isinstance(value, (str, int, float, bool)):
-                sanitized[key] = value
-            else:
-                sanitized[key] = str(value)  # Convert to string if not a basic type
-    return sanitized
+    # document = f"NCM: {row['NCM']}, Rótulo: {row['rotulo']}, Item: {row['Item']}, Produto: {row['XPROD']}"
+    # return document
+    return row
 
 # Parallel process
 with ThreadPoolExecutor() as executor:
-    results = list(tqdm(executor.map(process_row, df.to_dicts()), total=len(df), desc="Processing rows"))
+    documents = list(tqdm(executor.map(process_row, df.to_dicts()), total=len(df), desc="Processando linhas"))
 
-documents, metadatas = zip(*results)
+print(documents[0:5])
 
 # Load a pre-trained Portuguese sentence transformer model
 model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2')
-embeddings = model.encode(documents)
+
+# Create embeddings for each field separately
+ncm_texts = [str(doc['NCM']) for doc in documents]
+rotulo_texts = [str(doc['rotulo']) for doc in documents]
+item_texts = [str(doc['Item']) for doc in documents]
+xprod_texts = [str(doc['XPROD']) for doc in documents]
+
+ncm_embeddings = model.encode(ncm_texts, batch_size=512, convert_to_tensor=True, show_progress_bar=True).tolist()
+rotulo_embeddings = model.encode(rotulo_texts, batch_size=512, convert_to_tensor=True, show_progress_bar=True).tolist()
+item_embeddings = model.encode(item_texts, batch_size=512, convert_to_tensor=True, show_progress_bar=True).tolist()
+xprod_embeddings = model.encode(xprod_texts, batch_size=512, convert_to_tensor=True, show_progress_bar=True).tolist()
+
 
 # Create persistent chromadb
 try:
@@ -65,14 +60,41 @@ with tqdm(total=len(documents), desc="Adding to ChromaDB") as pbar:
     for i in range(0, len(documents), batch_size):
         batch_end = min(i + batch_size, len(documents))
         batch_documents = documents[i:batch_end]
-        batch_embeddings = embeddings[i:batch_end]
-        batch_metadatas = [sanitize_metadata(metadata) for metadata in metadatas[i:batch_end]]
-        batch_ids = [f"id{j}" for j in range(i, batch_end)]
+
+        batch_ncm_embeddings = ncm_embeddings[i:batch_end]
+        batch_rotulo_embeddings = rotulo_embeddings[i:batch_end]
+        batch_item_embeddings = item_embeddings[i:batch_end]
+        batch_xprod_embeddings = xprod_embeddings[i:batch_end]
+
+        metadatas = [{
+            "NCM": doc['NCM'],
+            "rotulo": doc['rotulo'],
+            "Item": doc['Item'],
+            "Produto": doc['XPROD']
+        } for doc in batch_documents]
 
         collection.add(
-            documents=batch_documents,
-            embeddings=batch_embeddings,
-            metadatas=batch_metadatas,
-            ids=batch_ids
+            embeddings=batch_ncm_embeddings,
+            metadatas=metadatas,
+            ids=[f"ncm_id{j}" for j in range(i, batch_end)],
+            documents = [f"NCM: {doc['NCM']}" for doc in batch_documents]
+        )
+        collection.add(
+            embeddings=batch_rotulo_embeddings,
+            metadatas=metadatas,
+            ids=[f"rotulo_id{j}" for j in range(i, batch_end)],
+            documents = [f"Rótulo: {doc['rotulo']}" for doc in batch_documents]
+        )
+        collection.add(
+            embeddings=batch_item_embeddings,
+            metadatas=metadatas,
+            ids=[f"item_id{j}" for j in range(i, batch_end)],
+            documents = [f"Item: {doc['Item']}" for doc in batch_documents]
+        )
+        collection.add(
+            embeddings=batch_xprod_embeddings,
+            metadatas=metadatas,
+            ids=[f"xprod_id{j}" for j in range(i, batch_end)],
+            documents = [f"Produto: {doc['XPROD']}" for doc in batch_documents]
         )
         pbar.update(len(batch_documents))
