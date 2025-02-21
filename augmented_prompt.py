@@ -111,8 +111,22 @@ def create_augmented_prompt(prompt):
     return augmented_prompt
 
 tqdm.pandas(desc="Generating augmented prompts")
+
+# Create a temporary series with augmented prompts
 tmp = df['prompt'].head(196).progress_apply(create_augmented_prompt)
-tmp = tmp.repeat(len(df)/196)
+
+# Ensure the index of the temporary series matches the DataFrame's index after the head operation
+tmp.index = df['prompt'].head(196).index
+
+# Repeat the augmented prompts to match the length of the DataFrame
+num_repeats = len(df) // len(tmp)
+remainder = len(df) % len(tmp)
+
+# Create a list by repeating the augmented prompts and handling the remainder
+repeated_tmp = list(tmp) * num_repeats + list(tmp[:remainder])
+
+# Convert the list to a Pandas Series
+tmp = pd.Series(repeated_tmp)
 
 # Apply Augmented Prompt to DataFrame
 df['augmented_prompt'] = tmp
