@@ -54,7 +54,7 @@ collection_name = "ncm-all-data"
 collection = client.get_or_create_collection(name=collection_name)
 
 # Populate chromadb in batches
-batch_size = 41666  # Adjust batch size as needed
+batch_size = 41666  # Max batch size
 print("Start populating chromadb")
 with tqdm(total=len(documents), desc="Adding to ChromaDB") as pbar:
     for i in range(0, len(documents), batch_size):
