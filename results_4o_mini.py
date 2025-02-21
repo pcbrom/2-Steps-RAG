@@ -52,4 +52,3 @@ for index, row in tqdm(df.iterrows(), total=len(df), desc=f"Processing {model}")
 
 # Save the updated DataFrame (optional)
 df.to_csv(output_filename, index=False)
-# Processing gpt-4o-mini-2024-07-18: 100%|███████████████████████████████████████████████████████████████████| 1764/1764 [59:39<00:00,  2.03s/it]
