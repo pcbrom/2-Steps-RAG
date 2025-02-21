@@ -174,6 +174,7 @@ gemini-2.0-flash-thinking-exp-01-21                     0.000000                
   - Total Tokens Augmented Prompt: 2.555M
   - Total Tokens Results: 0.000M
   - Total Cost (All Models): $1.58
+  
 ```
 
 ## About `results_4o_mini.py` and other `results_[model].py` scripts
