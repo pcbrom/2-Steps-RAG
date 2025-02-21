@@ -2,22 +2,22 @@ import pandas as pd
 import tiktoken
 from tqdm import tqdm
 import os
-import json
 
 # Load DataFrame
-plan_file_path = ""
+plan_file_path = "augmented_prompt.csv"
 if not os.path.exists(plan_file_path):
     raise FileNotFoundError(f"Error: File {plan_file_path} not found.")
 
-df = pd.read_excel(plan_file_path)
+df = pd.read_csv(plan_file_path)
 
-# Define Model Pricing Data
+# Define Model Pricing Data (Prices in dollars per million tokens)
 model_data = {
     "gpt-4o-mini-2024-07-18": {"encoding": "gpt-4o-mini-2024-07-18", "price_input": 0.15, "price_output": 0.075},
     "o1-mini-2024-09-12": {"encoding": "o1-mini-2024-09-12", "price_input": 1.10, "price_output": 0.55},
     "o3-mini-2025-01-31": {"encoding": "o3-mini-2025-01-31", "price_input": 1.10, "price_output": 0.55},
     "deepseek-reasoner": {"encoding": None, "price_input": 0.14, "price_output": 2.19},
-    "gemini-2.0-flash-thinking-exp-01-21": {"encoding": None, "price_input": 0.0, "price_output": 0.0}
+    "gemini-2.0-flash-thinking-exp-01-21": {"encoding": None, "price_input": 0.0, "price_output": 0.0},
+    "Slim RAFT": {"encoding": None, "price_input": 0.0, "price_output": 0.0}
 }
 
 # Token Count Function
@@ -43,7 +43,7 @@ def count_tokens(text, model_name):
 # Token Count
 tqdm.pandas(desc="Calculating tokens")
 df['augmented_prompt_tokens'] = df.progress_apply(lambda row: count_tokens(row['augmented_prompt'], row['model']), axis=1)
-df['results_tokens'] = df['augmented_prompt_tokens'] * 3
+df['results_tokens'] = df.progress_apply(lambda row: count_tokens(row['results'], row['model']), axis=1)
 
 # Aggregate tokens by model
 model_tokens = df.groupby('model').agg({
@@ -51,16 +51,57 @@ model_tokens = df.groupby('model').agg({
     'results_tokens': 'sum'
 })
 
-# Calculate total tokens
-total_augmented_prompt_tokens = model_tokens['augmented_prompt_tokens'].sum()
-total_results_tokens = model_tokens['results_tokens'].sum()
+# Calculate total tokens in millions
+total_augmented_prompt_tokens = model_tokens['augmented_prompt_tokens'].sum() / 1_000_000
+total_results_tokens = model_tokens['results_tokens'].sum() / 1_000_000
 
-print("\n🔹 Tokens per Model:")
+# Prepare data for DataFrame
+data = []
 for model, row in model_tokens.iterrows():
-    print(f"Model: {model}")
-    print(f"  - Augmented Prompt Tokens: {row['augmented_prompt_tokens']:,}")
-    print(f"  - Results Tokens: {row['results_tokens']:,}")
+    augmented_prompt_tokens_millions = row['augmented_prompt_tokens'] / 1_000_000
+    results_tokens_millions = row['results_tokens'] / 1_000_000
+    
+    # Get model pricing
+    if model in model_data:
+        model_price_input = model_data[model]["price_input"]
+        model_price_output = model_data[model]["price_output"]
+    else:
+        print(f"Warning: Model '{model}' not found in model_data. Skipping cost calculation for this model.")
+        continue
+    
+    # Calculate cost
+    augmented_prompt_cost = augmented_prompt_tokens_millions * model_price_input
+    results_cost = results_tokens_millions * model_price_output
+    total_cost = augmented_prompt_cost + results_cost
+    
+    data.append([
+        model,
+        augmented_prompt_tokens_millions,
+        augmented_prompt_cost,
+        results_tokens_millions,
+        results_cost,
+        total_cost
+    ])
 
-print("\n🔹 Total Tokens:")
-print(f"  - Total Augmented Prompt Tokens: {total_augmented_prompt_tokens:,}")
-print(f"  - Total Results Tokens: {total_results_tokens:,}")
+# Create DataFrame
+results_df = pd.DataFrame(data, columns=[
+    "Model",
+    "Tokens Augmented Prompt (M)",
+    "Cost Augmented Prompt ($)",
+    "Tokens Results (M)",
+    "Cost Results ($)",
+    "Total Cost ($)"
+])
+
+# Print DataFrame
+print("\n🔹 Costs (Dollars) and Tokens (Millions) by Model:")
+print(results_df.to_string(index=False))
+
+print("\n🔹 Totals:")
+print(f"  - Total Tokens Augmented Prompt: {total_augmented_prompt_tokens:.3f}M")
+print(f"  - Total Tokens Results: {total_results_tokens:.3f}M")
+
+# Calculate total cost
+total_cost_all_models = results_df["Total Cost ($)"].sum()
+
+print(f"  - Total Cost (All Models): ${total_cost_all_models:.2f}")
