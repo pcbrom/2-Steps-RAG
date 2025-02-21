@@ -28,12 +28,10 @@ model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniL
 # Create embeddings for each field separately
 ncm_texts = [str(doc['NCM']) for doc in documents]
 rotulo_texts = [str(doc['rotulo']) for doc in documents]
-item_texts = [str(doc['Item']) for doc in documents]
 xprod_texts = [str(doc['XPROD']) for doc in documents]
 
 ncm_embeddings = model.encode(ncm_texts, batch_size=512, convert_to_tensor=True, show_progress_bar=True).tolist()
 rotulo_embeddings = model.encode(rotulo_texts, batch_size=512, convert_to_tensor=True, show_progress_bar=True).tolist()
-item_embeddings = model.encode(item_texts, batch_size=512, convert_to_tensor=True, show_progress_bar=True).tolist()
 xprod_embeddings = model.encode(xprod_texts, batch_size=512, convert_to_tensor=True, show_progress_bar=True).tolist()
 
 
@@ -63,7 +61,6 @@ with tqdm(total=len(documents), desc="Adding to ChromaDB") as pbar:
 
         batch_ncm_embeddings = ncm_embeddings[i:batch_end]
         batch_rotulo_embeddings = rotulo_embeddings[i:batch_end]
-        batch_item_embeddings = item_embeddings[i:batch_end]
         batch_xprod_embeddings = xprod_embeddings[i:batch_end]
 
         metadatas = [{
@@ -86,7 +83,6 @@ with tqdm(total=len(documents), desc="Adding to ChromaDB") as pbar:
             documents = [f"Rótulo: {doc['rotulo']}" for doc in batch_documents]
         )
         collection.add(
-            embeddings=batch_item_embeddings,
             metadatas=metadatas,
             ids=[f"item_id{j}" for j in range(i, batch_end)],
             documents = [f"Item: {doc['Item']}" for doc in batch_documents]
