@@ -14,9 +14,9 @@ df = pd.read_csv(plan_file_path)
 model_data = {
     "gpt-4o-mini-2024-07-18": {"encoding": "gpt-4o-mini-2024-07-18", "price_input": 0.15, "price_output": 0.075},
     "o1-mini-2024-09-12": {"encoding": "o1-mini-2024-09-12", "price_input": 1.10, "price_output": 0.55},
-    "o3-mini-2025-01-31": {"encoding": "o3-mini-2025-01-31", "price_input": 1.10, "price_output": 0.55},
+    "Mistral-7B-Instruct-v0.3": {"encoding": "Mistral-7B-Instruct-v0.3", "price_input": 0.0, "price_output": 0.0},
     "deepseek-reasoner": {"encoding": None, "price_input": 0.14, "price_output": 2.19},
-    "gemini-2.0-flash-thinking-exp-01-21": {"encoding": None, "price_input": 0.0, "price_output": 0.0},
+    "gemini-2.0-flash": {"encoding": "gemini-2.0-flash", "price_input": 0.1, "price_output": 0.4},
     "Slim RAFT": {"encoding": None, "price_input": 0.0, "price_output": 0.0}
 }
 
@@ -27,7 +27,7 @@ def count_tokens(text, model_name):
     if not model_info:
         return 0
 
-    if model_name == "deepseek-reasoner":
+    if model_name == "deepseek-reasoner" or model_name == "gemini-2.0-flash":
         return len(text) * 0.3 if isinstance(text, str) else 0
 
     encoding_name = model_info["encoding"]

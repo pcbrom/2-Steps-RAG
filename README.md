@@ -162,18 +162,18 @@ For example, a sample output might look like this:
 
 ```
 Costs (Dollars) and Tokens (Millions) by Model:
-                              Model  Tokens Augmented Prompt (M)  Cost Augmented Prompt ($)  Tokens Results (M)  Cost Results ($)  Total Cost ($)
-                          Slim RAFT                     0.000000                   0.000000                 0.0               0.0        0.000000
-                  deepseek-reasoner                     0.651154                   0.091162                 0.0               0.0        0.091162
-gemini-2.0-flash-thinking-exp-01-21                     0.000000                   0.000000                 0.0               0.0        0.000000
-             gpt-4o-mini-2024-07-18                     0.634707                   0.095206                 0.0               0.0        0.095206
-                 o1-mini-2024-09-12                     0.634707                   0.698178                 0.0               0.0        0.698178
-                 o3-mini-2025-01-31                     0.634707                   0.698178                 0.0               0.0        0.698178
+                   Model  Tokens Augmented Prompt (M)  Cost Augmented Prompt ($)  Tokens Results (M)  Cost Results ($)  Total Cost ($)
+Mistral-7B-Instruct-v0.3                     0.000000                   0.000000                 0.0               0.0        0.000000
+               Slim RAFT                     0.000000                   0.000000                 0.0               0.0        0.000000
+       deepseek-reasoner                     0.651154                   0.091162                 0.0               0.0        0.091162
+        gemini-2.0-flash                     0.651154                   0.065115                 0.0               0.0        0.065115
+  gpt-4o-mini-2024-07-18                     0.634707                   0.095206                 0.0               0.0        0.095206
+      o1-mini-2024-09-12                     0.634707                   0.698178                 0.0               0.0        0.698178
 
 🔹 Totals:
-  - Total Tokens Augmented Prompt: 2.555M
+  - Total Tokens Augmented Prompt: 2.572M
   - Total Tokens Results: 0.000M
-  - Total Cost (All Models): $1.58
+  - Total Cost (All Models): $0.95
 ```
 
 ## About `results_4o_mini.py` and other `results_[model].py` scripts
@@ -184,7 +184,6 @@ To ensure all experimental conditions are evaluated and results are captured, th
 2. **Comprehensive Error Handling:** Implement more detailed error handling to catch potential issues during API calls. This includes logging errors and providing informative messages, including the model name, prompt, and error details. Consider using try-except blocks to catch `openai.OpenAIError` and other potential exceptions. Store the error messages in the 'results' column of the DataFrame.
 3. **Model Iteration:** The script should be able to iterate over the models specified in the experimental design file. The `model` variable in the loop should dynamically pick up the model name from the DataFrame row.
 4. **List of Supported Models:** The script should be compatible with the following models (but not limited to):
-
    * 'Slim RAFT'
    * 'gpt-4o-mini-2024-07-18'
    * 'o1-mini-2024-09-12' (Default values. Temperature and top_p cannot be changed: `temperature = 1.0` and `top_p = 1.0`)
