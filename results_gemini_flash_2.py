@@ -20,9 +20,9 @@ model = 'gemini-2.0-flash'
 client = genai.Client(api_key=google_api_key)
 
 # Import model
-csv_file = "augmented_prompt.csv"
+csv_file = "backup/augmented_prompt_common_rag.csv"
 df = pd.read_csv(csv_file, decimal='.', sep=',', encoding='utf-8')
-df = df[df['model'] == model]  # Filtrar pelo modelo desejado
+df = df[df['model'] == model]
 cols_to_fill = ['results', 'score']
 df[cols_to_fill] = df[cols_to_fill].fillna('')
 print(df)
