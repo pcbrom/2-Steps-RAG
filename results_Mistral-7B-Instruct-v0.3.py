@@ -2,9 +2,9 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 from tqdm import tqdm
-import time
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+from datasets import Dataset
 # huggingface-cli download mistralai/Mistral-7B-Instruct-v0.3 --local-dir /mnt/4d4f90e5-f220-481e-8701-f0a546491c35/arquivos/hf_models/mistralai/Mistral-7B-Instruct-v0.3 --local-dir-use-symlinks False
 
 # Specify the path to your .env file
@@ -22,12 +22,15 @@ if not os.path.exists(model_path):
     raise OSError(f"Model directory does not exist: {model_path}. Download the model first.")
 
 # Load the CSV file
-csv_file = "augmented_prompt_2step_rag.csv"
+csv_file = "augmented_prompt_common_rag.csv"
 df = pd.read_csv(csv_file, decimal='.', sep=',', encoding='utf-8')
 df = df[df['model'] == model_name]
 cols_to_fill = ['results', 'score']
 df[cols_to_fill] = df[cols_to_fill].fillna('')
 print(df)
+
+# Convert DataFrame to Dataset
+dataset = Dataset.from_pandas(df)
 
 # Load the local model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
@@ -42,32 +45,32 @@ llm_pipeline = pipeline(
     "text-generation",
     model=model,
     tokenizer=tokenizer,
-    pad_token_id=tokenizer.eos_token_id  # Suppress the warning
+    pad_token_id=tokenizer.eos_token_id
 )
 
-# Iterate over DataFrame and generate responses
-for index, row in tqdm(df.iterrows(), total=df.shape[0]):
-    try:
-        augmented_prompt = row['augmented_prompt']
+def generate_response(example):
+    augmented_prompt = example['augmented_prompt']
+    temperature = float(example['temperature'])
+    top_p = float(example['top_p'])
 
-        response = llm_pipeline(
-            augmented_prompt,
-            do_sample=True, # If True parameters such as temperature and top_p influence the generation of the text.
-            temperature=float(row['temperature']),
-            top_p=float(row['top_p']),
-            max_new_tokens=300
-        )[0]['generated_text']
-        response = response.replace(augmented_prompt, "")
-        df.loc[index, 'results'] = response
-        # print(response)
-        # break
+    response = llm_pipeline(
+        augmented_prompt,
+        do_sample=True,  # If True parameters such as temperature and top_p influence the generation of the text.
+        temperature=temperature,
+        top_p=top_p,
+        max_new_tokens=300
+    )[0]['generated_text']
+    response = response.replace(augmented_prompt, "")
+    return {'results': response}
 
-    except Exception as e:
-        print(f"Unexpected error at row {index}: {e}")
-        df.loc[index, 'results'] = f"Error: {e}"
+# Process the dataset
+processed_dataset = dataset.map(generate_response)
+
+# Update the DataFrame with the results
+df['results'] = processed_dataset['results']
 
 # Save the updated DataFrame
-output_filename = f"results_{model_name}.csv"
+output_filename = f"experimental_design_results_{model_name}.csv"
 df.to_csv(output_filename, index=False)
 
 print(f"Completed. Results saved in {output_filename}")
