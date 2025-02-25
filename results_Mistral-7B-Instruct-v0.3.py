@@ -30,7 +30,7 @@ df[cols_to_fill] = df[cols_to_fill].fillna('')
 print(df)
 
 # Load the local model and tokenizer
-tokenizer = AutoTokenizer.from_pretrained(model_path)
+tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=True)
 model = AutoModelForCausalLM.from_pretrained(
     model_path,
     torch_dtype=torch.float16,
@@ -42,27 +42,25 @@ llm_pipeline = pipeline(
     "text-generation",
     model=model,
     tokenizer=tokenizer,
-    device=0
+    pad_token_id=tokenizer.eos_token_id  # Suppress the warning
 )
 
 # Iterate over DataFrame and generate responses
 for index, row in tqdm(df.iterrows(), total=df.shape[0]):
-    if index % 100 == 0 and index != 0:
-        print("min. pause...")
-        time.sleep(60)
-
     try:
         augmented_prompt = row['augmented_prompt']
 
         response = llm_pipeline(
             augmented_prompt,
-            do_sample=True,
+            do_sample=True, # If True parameters such as temperature and top_p influence the generation of the text.
             temperature=float(row['temperature']),
             top_p=float(row['top_p']),
-            max_new_tokens=200
+            max_new_tokens=300
         )[0]['generated_text']
-
+        response = response.replace(augmented_prompt, "")
         df.loc[index, 'results'] = response
+        # print(response)
+        # break
 
     except Exception as e:
         print(f"Unexpected error at row {index}: {e}")
