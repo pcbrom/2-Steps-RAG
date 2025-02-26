@@ -173,7 +173,7 @@ Mistral-7B-Instruct-v0.3                     0.000000                   0.000000
 🔹 Totals:
   - Total Tokens Augmented Prompt: 2.572M
   - Total Tokens Results: 0.000M
-  - Total Cost (All Models): $0.95
+  - Total Cost (All Models) = (Input) $0.95 + (Output, max 3 times Input) $0.95 \leq $3.80
 ```
 
 ## About `results_4o_mini.py` and other `results_[model].py` scripts
