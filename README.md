@@ -184,12 +184,12 @@ To ensure all experimental conditions are evaluated and results are captured, th
 2. **Comprehensive Error Handling:** Implement more detailed error handling to catch potential issues during API calls. This includes logging errors and providing informative messages, including the model name, prompt, and error details. Consider using try-except blocks to catch `openai.OpenAIError` and other potential exceptions. Store the error messages in the 'results' column of the DataFrame.
 3. **Model Iteration:** The script should be able to iterate over the models specified in the experimental design file. The `model` variable in the loop should dynamically pick up the model name from the DataFrame row.
 4. **List of Supported Models:** The script should be compatible with the following models (but not limited to):
-   * 'Slim RAFT'
-   * 'gpt-4o-mini-2024-07-18'
-   * 'o1-mini-2024-09-12' (Default values. Temperature and top_p cannot be changed: `temperature = 1.0` and `top_p = 1.0`)
-   * 'o3-mini-2025-01-31' (Error code: 404 - {'error': {'message': 'The model `o3-mini-2025-01-31` does not exist or you do not have access to it.', 'type': 'invalid_request_error', 'param': None, 'code': 'model_not_found'}})
-   * 'deepseek-reasoner'
-   * 'gemini-2.0-flash-thinking-exp-01-21'
+   * Mistral-7B-Instruct-v0.3: Locally generated results. 
+   * Slim RAFT: Locally generated results. 
+   * deepseek-reasoner: API generated results.
+   * gemini-2.0-flash: API generated results.
+   * gpt-4o-mini-2024-07-18: API generated results.
+   * o1-mini-2024-09-12: API generated results. Default values are fixed - Temperature and top_p cannot be changed: `temperature = 1.0` and `top_p = 1.0`)
 5. **Saving All Results:** The script should save the results for all models into a single CSV file. The CSV filename should indicate that it contains results from multiple models (e.g., `experimental_design_results_all_models.csv`). Ensure the `index=False` argument is used when saving the CSV to avoid including the DataFrame index as a column.
 6. **Retrieval-Augmented Generation Prompt Augmentation:** The script uses prompt augmentation with context retrieved from ChromaDB. Ensure that the ChromaDB collection name (`ncm-all-data`) is correctly specified and that the `populate_chromadb.py` script has been run to populate the database.
 7. **Temperature and Top_p:** The script reads `temperature` and `top_p` values from the experimental design file. Ensure these columns exist and contain valid numerical values.
