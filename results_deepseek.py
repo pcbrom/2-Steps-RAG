@@ -17,7 +17,7 @@ client = OpenAI(api_key=deepseek_api_key, base_url="https://api.deepseek.com")
 model = 'deepseek-chat'
 
 # Import model
-csv_file = "augmented_prompt_2step_rag.csv"
+csv_file = "augmented_prompt_common_rag.csv"
 df = pd.read_csv(csv_file, decimal='.', sep=',', encoding='utf-8')
 df = df[df['model'] == model]
 cols_to_fill = ['results', 'score']
