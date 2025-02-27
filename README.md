@@ -165,7 +165,7 @@ Costs (Dollars) and Tokens (Millions) by Model:
                    Model  Tokens Augmented Prompt (M)  Cost Augmented Prompt ($)  Tokens Results (M)  Cost Results ($)  Total Cost ($)
 Mistral-7B-Instruct-v0.3                     0.000000                   0.000000                 0.0               0.0        0.000000
                Slim RAFT                     0.000000                   0.000000                 0.0               0.0        0.000000
-       deepseek-reasoner                     0.651154                   0.091162                 0.0               0.0        0.091162
+           deepseek-chat                     0.651154                   0.091162                 0.0               0.0        0.091162
         gemini-2.0-flash                     0.651154                   0.065115                 0.0               0.0        0.065115
   gpt-4o-mini-2024-07-18                     0.634707                   0.095206                 0.0               0.0        0.095206
       o1-mini-2024-09-12                     0.634707                   0.698178                 0.0               0.0        0.698178
@@ -186,7 +186,7 @@ To ensure all experimental conditions are evaluated and results are captured, th
 4. **List of Supported Models:** The script should be compatible with the following models (but not limited to):
    * Mistral-7B-Instruct-v0.3: Locally generated results. 
    * Slim RAFT: Locally generated results. 
-   * deepseek-reasoner: API generated results.
+   * deepseek-chat: API generated results.
    * gemini-2.0-flash: API generated results.
    * gpt-4o-mini-2024-07-18: API generated results.
    * o1-mini-2024-09-12: API generated results. Default values are fixed - Temperature and top_p cannot be changed: `temperature = 1.0` and `top_p = 1.0`)

@@ -14,7 +14,7 @@ load_dotenv(dotenv_path=dotenv_path)
 # Access and store the environment variable
 deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
 client = OpenAI(api_key=deepseek_api_key, base_url="https://api.deepseek.com")
-model = 'deepseek-reasoner'
+model = 'deepseek-chat'
 
 # Import model
 csv_file = "augmented_prompt_2step_rag.csv"
@@ -38,7 +38,8 @@ for index, row in tqdm(df.iterrows(), total=len(df), desc=f"Processing {model}")
             messages=[{"role": "user", "content": augmented_prompt}],
             temperature=float(row['temperature']),
             top_p=float(row['top_p']),
-            stream=False
+            stream=False,
+            max_tokens=300
         )
         
         # Extract and store the generated text
