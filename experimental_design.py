@@ -18,7 +18,7 @@ Higher values: Encourage more diverse and creative responses by including
 a wider range of potential tokens. 
 """
 control_variables = {
-    'model': ['Slim RAFT', 'deepseek-reasoner', 'gpt-4o-mini-2024-07-18', 'o1-mini-2024-09-12', 'Mistral-7B-Instruct-v0.3', 'gemini-2.0-flash'],
+    'model': ['TeenyTinyLlama-160m-NCM-ft', 'deepseek-reasoner', 'gpt-4o-mini-2024-07-18', 'o1-mini-2024-09-12', 'Mistral-7B-Instruct-v0.3', 'gemini-2.0-flash'],
     'attempt': range(1, 197),
     'temperature': [0.1, 1.0, 1.9],
     'top_p': [0.1, 0.5, 0.9]

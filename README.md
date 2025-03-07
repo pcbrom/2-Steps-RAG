@@ -162,13 +162,13 @@ For example, a sample output might look like this:
 
 ```
 Costs (Dollars) and Tokens (Millions) by Model:
-                   Model  Tokens Augmented Prompt (M)  Cost Augmented Prompt ($)  Tokens Results (M)  Cost Results ($)  Total Cost ($)
-Mistral-7B-Instruct-v0.3                     0.000000                   0.000000                 0.0               0.0        0.000000
-               Slim RAFT                     0.000000                   0.000000                 0.0               0.0        0.000000
-           deepseek-chat                     0.651154                   0.091162                 0.0               0.0        0.091162
-        gemini-2.0-flash                     0.651154                   0.065115                 0.0               0.0        0.065115
-  gpt-4o-mini-2024-07-18                     0.634707                   0.095206                 0.0               0.0        0.095206
-      o1-mini-2024-09-12                     0.634707                   0.698178                 0.0               0.0        0.698178
+                     Model  Tokens Augmented Prompt (M)  Cost Augmented Prompt ($)  Tokens Results (M)  Cost Results ($)  Total Cost ($)
+  Mistral-7B-Instruct-v0.3                     0.000000                   0.000000                 0.0               0.0        0.000000
+TeenyTinyLlama-160m-NCM-ft                     0.000000                   0.000000                 0.0               0.0        0.000000
+             deepseek-chat                     0.651154                   0.091162                 0.0               0.0        0.091162
+          gemini-2.0-flash                     0.651154                   0.065115                 0.0               0.0        0.065115
+    gpt-4o-mini-2024-07-18                     0.634707                   0.095206                 0.0               0.0        0.095206
+        o1-mini-2024-09-12                     0.634707                   0.698178                 0.0               0.0        0.698178
 
 🔹 Totals:
   - Total Tokens Augmented Prompt: 2.572M
@@ -185,7 +185,7 @@ To ensure all experimental conditions are evaluated and results are captured, th
 3. **Model Iteration:** The script should be able to iterate over the models specified in the experimental design file. The `model` variable in the loop should dynamically pick up the model name from the DataFrame row.
 4. **List of Supported Models:** The script should be compatible with the following models (but not limited to):
    * Mistral-7B-Instruct-v0.3: Locally generated results. 
-   * Slim RAFT: Locally generated results. 
+   * TeenyTinyLlama-160m-NCM-ft: Locally generated results. 
    * deepseek-chat: API generated results.
    * gemini-2.0-flash: API generated results.
    * gpt-4o-mini-2024-07-18: API generated results.

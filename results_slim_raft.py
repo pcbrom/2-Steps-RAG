@@ -5,7 +5,7 @@ from tqdm import tqdm
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from datasets import Dataset
-# huggingface-cli download vinidiol/TeenyTinyLlama-160m-CEP-ft --local-dir /mnt/4d4f90e5-f220-481e-8701-f0a546491c35/arquivos/hf_models/vinidiol/TeenyTinyLlama-160m-CEP-ft --local-dir-use-symlinks False
+# huggingface-cli download vinidiol/TeenyTinyLlama-160m-NCM-ft --local-dir /mnt/4d4f90e5-f220-481e-8701-f0a546491c35/arquivos/hf_models/vinidiol/TeenyTinyLlama-160m-NCM-ft --local-dir-use-symlinks False
 
 # Specify the path to your .env file
 dotenv_path = "/mnt/4d4f90e5-f220-481e-8701-f0a546491c35/arquivos/projetos/.env"
@@ -14,8 +14,8 @@ dotenv_path = "/mnt/4d4f90e5-f220-481e-8701-f0a546491c35/arquivos/projetos/.env"
 load_dotenv(dotenv_path=dotenv_path)
 
 # Define the local model path
-model_path = "/mnt/4d4f90e5-f220-481e-8701-f0a546491c35/arquivos/hf_models/vinidiol/TeenyTinyLlama-160m-CEP-ft"
-model_name = "TeenyTinyLlama-160m-CEP-ft"
+model_path = "/mnt/4d4f90e5-f220-481e-8701-f0a546491c35/arquivos/hf_models/vinidiol/TeenyTinyLlama-160m-NCM-ft"
+model_name = "TeenyTinyLlama-160m-NCM-ft"
 
 # Check if the model directory exists
 if not os.path.exists(model_path):

@@ -17,7 +17,7 @@ model_data = {
     "Mistral-7B-Instruct-v0.3": {"encoding": "Mistral-7B-Instruct-v0.3", "price_input": 0.0, "price_output": 0.0},
     "deepseek-reasoner": {"encoding": None, "price_input": 0.14, "price_output": 2.19},
     "gemini-2.0-flash": {"encoding": "gemini-2.0-flash", "price_input": 0.1, "price_output": 0.4},
-    "Slim RAFT": {"encoding": None, "price_input": 0.0, "price_output": 0.0}
+    "TeenyTinyLlama-160m-NCM-ft": {"encoding": None, "price_input": 0.0, "price_output": 0.0}
 }
 
 # Token Count Function
