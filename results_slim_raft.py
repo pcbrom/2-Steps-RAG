@@ -22,7 +22,7 @@ if not os.path.exists(model_path):
     raise OSError(f"Model directory does not exist: {model_path}. Download the model first.")
 
 # Load the CSV file
-csv_file = "augmented_prompt_common_rag.csv"
+csv_file = "augmented_prompt_2step_rag.csv"
 df = pd.read_csv(csv_file, decimal='.', sep=',', encoding='utf-8')
 df = df[df['model'] == model_name]
 cols_to_fill = ['results', 'score']
