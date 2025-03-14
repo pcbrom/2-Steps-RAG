@@ -1,4 +1,4 @@
-# Classical Test Theory (CTT) for analyzing LLM responses
+# Two-Step Retrieval-Augmented Generation for Metadata Filtering and Large Language Model Evaluation with Bootstrap Multivariate Linear Mixed Model with Random Intercepts for Prompts
 
 ## Experimental Design
 
