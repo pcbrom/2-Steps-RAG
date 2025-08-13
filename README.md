@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/928436206.svg)](https://doi.org/10.5281/zenodo.16857984)
+
 # Two-Step Retrieval-Augmented Generation for Metadata Filtering and Large Language Model Evaluation with Bootstrap Multivariate Linear Mixed Model with Random Intercepts for Prompts
 
 ## Experimental Design
