@@ -9,9 +9,69 @@ Affiliation: Universidade de Brasília - UnB
 
 ## Experimental Design
 
-This repository contains a Python script (`experimental_design.py`) that generates an experimental design plan for experiments with large language models (LLMs).  The script defines control variables such as `temperature`, `top_p`, and `model`, creating all possible combinations of these parameters using the `itertools.product` function. This design is then saved to an Excel file (`experimental_design_plan.xlsx`).
+This repository provides all the scripts and data required to reproduce the experimental design and statistical evaluation described in the paper.
 
-The Excel file includes columns for each control parameter, along with additional columns for prompts, results, and a score, which are initially left empty to be filled in during the experiment.  Furthermore, the script performs a power analysis using `statsmodels.stats.power.FTestAnovaPower` to determine the necessary number of replicates per condition, ensuring sufficient statistical power for the planned analysis. This facilitates the organization and execution of systematic experiments with LLMs, allowing for a more complete and statistically robust analysis of the results.
+* **Experimental Design Script**
+
+   * `experimental_design.py` generates the full factorial design for the experiments.
+
+   * Control variables include `temperature`, `top_p`, and `model`.
+
+   * All possible combinations of these parameters are created using `itertools.product`.
+
+   * The output is saved as `experimental_design_plan.xlsx`, which contains columns for the control parameters, prompts, results, and scores. Prompts, results, and scores are initially empty and are populated during the experimentation process.
+
+* Evaluation Notebook
+
+   * `evaluate_llms.ipynb` demonstrates how to run the planned experiments with different LLMs.
+
+   * This notebook guides the user through executing the queries, collecting model outputs, and recording results according to the design plan.
+
+* Statistical Analysis Notebook
+
+   * `statistical_analysis.ipynb` contains the scripts used to conduct bootstrap resampling, linear mixed models, and variance decomposition.
+
+   * This notebook reproduces the statistical results reported in the paper, including confidence intervals and significance tests.
+
+* Power Analysis
+
+   * The `experimental_design.py` script also performs power analysis using `statsmodels.stats.power.FTestAnovaPower`.
+
+   * This calculation determines the necessary number of replicates per condition to achieve sufficient statistical power.
+
+#### File Directory Overview
+
+```
+2-Steps-RAG/
+├── experimental_design.py          # Script to generate factorial design and perform power analysis
+├── experimental_design_plan.xlsx   # Excel file with the generated design (inputs, prompts, results, scores)
+├── evaluate_llms.ipynb             # Notebook for running experiments and collecting outputs
+├── statistical_analysis.ipynb      # Notebook for bootstrap resampling and linear mixed model analysis
+├── requirements.txt                # Python dependencies for reproducibility
+├── data/                           # Directory containing prompt sets, results, and related datasets
+│   └── ...                         # Data files used and generated during experiments
+└── results/                        # Directory for saving experimental outputs and logs
+    └── ...                         # Includes processed results used in the statistical analysis
+```
+
+#### Reproduction Workflow
+
+Together, these resources allow users to reproduce the full experimental pipeline:
+
+   1. Generate the design plan (`experimental_design.py`).
+
+   2. Run experiments and collect outputs (`evaluate_llms.ipynb`).
+
+   3. Analyse the results with bootstrap and mixed models (`statistical_analysis.ipynb`).
+
+
+
+
+
+
+
+ 
+
 
 ## Sample Size Determination
 
