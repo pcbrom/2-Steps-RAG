@@ -67,11 +67,10 @@ Together, these resources allow users to reproduce the full experimental pipelin
 
 
 
+---
 
-
-
+## **ADITIONAL INFORMATION**
  
-
 
 ## Sample Size Determination
 
