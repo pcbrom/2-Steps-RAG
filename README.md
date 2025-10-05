@@ -1,6 +1,11 @@
 [![DOI](https://zenodo.org/badge/928436206.svg)](https://doi.org/10.5281/zenodo.16857984)
 
-# Two-Step Retrieval-Augmented Generation for Metadata Filtering and Large Language Model Evaluation with Bootstrap Multivariate Linear Mixed Model with Random Intercepts for Prompts
+# Two-Step RAG for Metadata Filtering and Statistical LLM Evaluation
+Manuscript IEEE LATAM Submission ID: 9793 
+
+Authors: Vinícius Di Oliveira, Pedro Carvalho Brom and Li Weigang
+
+Affiliation: Universidade de Brasília - UnB
 
 ## Experimental Design
 
